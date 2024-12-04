@@ -423,7 +423,7 @@ def main():
 
                 # Update layout
                 fig2.update_layout(
-                    title='Point-wise Root Mean Square Error',
+                    title='Hour-wise Root Mean Square Error',
                     xaxis_title='Date',
                     yaxis_title='RMSE',
                     height=500
