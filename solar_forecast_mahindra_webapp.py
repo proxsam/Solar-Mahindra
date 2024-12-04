@@ -305,6 +305,10 @@ def main():
 
             train = pd.read_csv("train_11_27_2024.csv")
 
+            actual_power_28_11 = pd.read_csv('Real_Power_28_11_24.csv', skiprows=5, nrows=18)
+
+            actual_power_28_11.rename(columns={"0.0": "Active_Power"}, inplace=True)
+
             initial_forecast_data_no_linear = train.tail(24)
 
             initial_forecast_data_no_linear['date'] = pd.to_datetime(initial_forecast_data_no_linear['date'])
@@ -365,6 +369,7 @@ def main():
                     'date': future_dates,
                     'predicted_power': future_predictions
                 })
+            df_daylight['Active_Power'] = actual_power_28_11['Active_Power']
 
             # Create tabs for different views
             tab1, tab2 = st.tabs(["Forecast Plot", "Plots"])
@@ -378,7 +383,14 @@ def main():
                     x=df_daylight['date'],
                     y=df_daylight['predicted_power'],
                     name='Predicted Power',
-                    line=dict(color='green', dash='dash')  
+                    line=dict(color='green')  
+                ))
+
+                fig.add_trace(go.Scatter(
+                    x=df_daylight['date'],
+                    y=df_daylight['Active_Power'],
+                    name='Actual Power',
+                    line=dict(color='red')  
                 ))
 
                 # Update layout
@@ -391,8 +403,34 @@ def main():
 
                 # Display in Streamlit
                 st.plotly_chart(fig)
+
+                actual_values = df_daylight['Active_Power']
+                predicted_values = df_daylight['predicted_power']
+
+                point_wise_rmse = np.sqrt((actual_values - predicted_values)**2)
+                df_daylight['Hour_Wise_RMSE'] = point_wise_rmse
             
                 st.dataframe(df_daylight)
+                fig2 = go.Figure()
+
+                # Add point-wise RMSE line
+                fig2.add_trace(go.Scatter(
+                    x=df_daylight['date'],
+                    y=point_wise_rmse,
+                    name='Point-wise RMSE',
+                    line=dict(color='blue')  
+                ))
+
+                # Update layout
+                fig2.update_layout(
+                    title='Point-wise Root Mean Square Error',
+                    xaxis_title='Date',
+                    yaxis_title='RMSE',
+                    height=500
+                )
+                
+                # Display in Streamlit
+                st.plotly_chart(fig2)
 
             with tab2:
                 # Display 3 images in columns
@@ -400,7 +438,8 @@ def main():
                 
                 with col1:
                     st.image('val_data_preds.png', caption='Validation Data Predictions', use_container_width=True)
-                
+                    st.image('how_early_train.png',caption='How earlier dates we use to Train Vs RMSE ', use_container_width=True)
+                    st.image('top_25_correlation.png',caption='Top 25 Features Correlation with Active Power ', use_container_width=True)
                 with col2:
                     st.image('mahindra_flow_chart.png', caption='Predictons Flowchart', use_container_width=True)
 
