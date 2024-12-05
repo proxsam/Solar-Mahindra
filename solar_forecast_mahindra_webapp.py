@@ -372,7 +372,7 @@ def main():
             df_daylight['Active_Power'] = actual_power_28_11['Active_Power']
 
             # Create tabs for different views
-            tab1, tab2 = st.tabs(["Forecast Plot", "Plots"])
+            tab1, tab2 , tab3 = st.tabs(["Forecast Plot", "Plots","Time Predictor Variations"])
             
             with tab1:
                 # Create plot
@@ -423,7 +423,7 @@ def main():
 
                 # Update layout
                 fig2.update_layout(
-                    title='Point-wise Root Mean Square Error',
+                    title='Hour-wise Root Mean Square Error',
                     xaxis_title='Date',
                     yaxis_title='RMSE',
                     height=500
@@ -442,6 +442,18 @@ def main():
                     st.image('top_25_correlation.png',caption='Top 25 Features Correlation with Active Power ', use_container_width=True)
                 with col2:
                     st.image('mahindra_flow_chart.png', caption='Predictons Flowchart', use_container_width=True)
+            
+            with tab3:
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.image('predictors_rmse.png', caption='Next Timestamp Vs RMSE Plot', use_container_width=True)
+                    st.image('lag_1hr_predictor.png',caption='Actual Vs Predicted For Next Time 1 hr', use_container_width=True)
+                    st.image('lag_2hr_predictor.png',caption='Actual Vs Predicted For Next Time 2 hr', use_container_width=True)
+                with col2:
+                    st.image('predictors_dataframe.png', caption='Next Timestamp Vs RMSE Plot Dataframe', use_container_width=True)
+                    st.image('lag_4hr_predictor.png',caption='Actual Vs Predicted For Next Time 4 hr', use_container_width=True)
+                    st.image('lag_6hr_predictor.png',caption='Actual Vs Predicted For Next Time 6 hr', use_container_width=True)
+                    st.image('lag_24hr_predictor.png',caption='Actual Vs Predicted For Next Time 24 hr', use_container_width=True)
 
 if __name__ == '__main__':
     main()
